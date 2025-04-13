@@ -1,7 +1,8 @@
 
-# 🏗️ Terraform Infrastructure Project
 
-This project provisions a full-featured cloud infrastructure using Terraform. It includes:
+# 🏗️ Terraform Infrastructure for Primary Region (us-east-1)
+
+This project provisions a cloud infrastructure in the **primary region** (`us-east-1`) to handle main traffic, services, and databases for your application. It includes the following:
 
 - VPC and networking setup
 - Auto scaling compute instances (frontend & backend)
@@ -96,20 +97,22 @@ This project provisions a full-featured cloud infrastructure using Terraform. It
 
 ```
 .
+PRIMARY-US-east-1/
 ├── scripts/
-│   ├── frontend-lt.sh
-│   └── backend-lt.sh
-├── autoscalling.tf
-├── backend-tg&lb.tf
-├── bastionserver.tf
-├── frontend-tg&lb.tf
-├── launctemp.tf   # Consider renaming to launchtemplate.tf
-├── provider.tf
-├── rds.tf
-├── security_group.tf
-├── variable.tf
-├── vpc.tf
-└── README.md
+│   ├── backend-lt.sh             # EC2 user data script for backend
+│   └── frontend-lt.sh            # EC2 user data script for frontend
+├── autoscalling.tf               # Auto Scaling configuration
+├── backend-tg&lb.tf              # Backend target group and load balancer setup
+├── bastionserver.tf              # Bastion host setup for SSH access
+├── frontend-tg&lb.tf             # Frontend target group and load balancer setup
+├── launctemp.tf                  # EC2 launch template (rename to launchtemplate.tf)
+├── provider.tf                   # AWS provider setup (us-east-1)
+├── rds.tf                        # RDS provisioning for primary database
+├── security_group.tf             # Security group definitions
+├── variable.tf                   # Input variables used in infrastructure
+├── vpc.tf                        # VPC setup (subnets, route tables, gateways)
+└── README.md                     # Primary region documentation
+
 ```
 
 ---
