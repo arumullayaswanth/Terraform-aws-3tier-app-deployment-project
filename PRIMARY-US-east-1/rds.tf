@@ -1,6 +1,8 @@
+
+# -------------------------- RDS MySQL Database Instance --------------------------
 resource "aws_db_instance" "rds" {
   allocated_storage      = 20
-  identifier = "book-rds"
+  identifier             = "book-rds"
   db_subnet_group_name   = aws_db_subnet_group.sub-grp.id
   engine                 = "mysql"
   engine_version         = "8.0.32"
@@ -11,8 +13,8 @@ resource "aws_db_instance" "rds" {
   password               = var.rds-password
   skip_final_snapshot    = true
   vpc_security_group_ids = [aws_security_group.book-rds-sg.id]
-  depends_on = [ aws_db_subnet_group.sub-grp ]
-  publicly_accessible = false
+  depends_on             = [ aws_db_subnet_group.sub-grp ]
+  publicly_accessible    = false
   backup_retention_period = 7
 
   
@@ -21,6 +23,7 @@ resource "aws_db_instance" "rds" {
   }
 }
 
+# -------------------------- Subnet Group for RDS --------------------------
 resource "aws_db_subnet_group" "sub-grp" {
   name       = "main"
   subnet_ids = [aws_subnet.prvt7.id, aws_subnet.prvt8.id]
