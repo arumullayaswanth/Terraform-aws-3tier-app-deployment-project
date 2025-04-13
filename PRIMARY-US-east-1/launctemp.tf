@@ -1,3 +1,4 @@
+# ------------------------- Frontend AMI Data Source -------------------------
 data "aws_ami" "example" {
   most_recent = true
   owners      = ["self"] # Replace with the AWS account ID if needed
@@ -8,6 +9,7 @@ data "aws_ami" "example" {
   }
 }
 
+# ------------------------- Frontend Launch Template -------------------------
 # Launch Template Resource
 resource "aws_launch_template" "frontend" {
   name = "frontend-terraform"
@@ -27,6 +29,8 @@ resource "aws_launch_template" "frontend" {
   }
 }
 
+
+# ------------------------- Backend AMI Data Source -------------------------
 ###################################################################################
 data "aws_ami" "example1" {
   most_recent = true
@@ -38,7 +42,7 @@ data "aws_ami" "example1" {
   }
 }
 
-
+# ------------------------- Backend Launch Template -------------------------
 # Launch Template Resource
 resource "aws_launch_template" "backend" {
   name = "backend-terraform"
