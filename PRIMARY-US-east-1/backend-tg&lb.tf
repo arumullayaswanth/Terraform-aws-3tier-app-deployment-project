@@ -1,3 +1,4 @@
+# -------------------------- Target Group for Backend --------------------------
 resource "aws_lb_target_group" "back_end" {
   name     = "backend-tg"
   port     = 80
@@ -7,6 +8,7 @@ resource "aws_lb_target_group" "back_end" {
 
 }
 
+# -------------------------- Application Load Balancer for Backend --------------------------
 resource "aws_lb" "back_end" {
   name               = "backend-alb"
   internal           = false
@@ -19,6 +21,7 @@ resource "aws_lb" "back_end" {
   }
 }
 
+# -------------------------- Listener for Backend ALB (Port 80 - HTTP) --------------------------
 resource "aws_lb_listener" "back_end" {
   load_balancer_arn = aws_lb.back_end.arn
   port              = "80"
@@ -31,7 +34,7 @@ resource "aws_lb_listener" "back_end" {
   depends_on = [ aws_lb_target_group.back_end ]
 }
 
-
+# -------------------------- Optional HTTPS Listener (Commented Out) --------------------------
 # resource "aws_lb_listener" "back_end2" {
 #   load_balancer_arn = aws_lb.back_end.arn
 #   port              = "443"
