@@ -1,3 +1,4 @@
+# ------------------------- Target Group for Frontend -------------------------
 resource "aws_lb_target_group" "front_end" {
   name     = "frontend-tg"
   port     = 80
@@ -6,7 +7,7 @@ resource "aws_lb_target_group" "front_end" {
   depends_on = [ aws_vpc.three-tier ]
 
 }
-
+# ------------------------- Application Load Balancer for Frontend -------------------------
 resource "aws_lb" "front_end" {
   name               = "frontend-alb"
   internal           = false
@@ -20,6 +21,7 @@ resource "aws_lb" "front_end" {
   depends_on = [ aws_lb_target_group.front_end ]
 }
 
+# ------------------------- Listener for Frontend ALB (Port 80 - HTTP) -------------------------
 resource "aws_lb_listener" "front_end" {
   load_balancer_arn = aws_lb.front_end.arn
   port              = "80"
@@ -32,7 +34,7 @@ resource "aws_lb_listener" "front_end" {
   depends_on = [ aws_lb_target_group.front_end ]
 }
 
-
+# ------------------------- Optional HTTPS Listener (commented out) -------------------------
 # resource "aws_lb_listener" "front_end2" {
 #   load_balancer_arn = aws_lb.front_end.arn
 #   port              = "443"
