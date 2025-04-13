@@ -87,19 +87,21 @@ This project provisions a cloud infrastructure in the secondary region (`us-west
 
 ```
 SECONDARY-US-west-2/
+SECONDARY-US-west-2/
 ├── scripts/
-│   ├── backend-lt.sh
-│   └── frontend-lt.sh
-├── autoscalling.tf
-├── backend-tg&lb.tf
-├── frontend-tg&lb.tf
-├── launctemp.tf     # Consider renaming to launchtemplate.tf
-├── provider.tf
-├── read-replica.tf
-├── security_group.tf
-├── subnetgroup-rds.tf
-├── vpc.tf
-└── SECONDARY-README.md
+│   ├── backend-lt.sh             # User data script for backend EC2
+│   └── frontend-lt.sh            # User data script for frontend EC2
+├── autoscalling.tf               # Auto Scaling Group definitions
+├── backend-tg&lb.tf              # Backend target group & load balancer
+├── frontend-tg&lb.tf             # Frontend target group & load balancer
+├── launctemp.tf                  # EC2 launch templates (rename to launchtemplate.tf)
+├── provider.tf                   # AWS provider config (region = us-west-2)
+├── read-replica.tf               # RDS Read Replica from primary region
+├── security_group.tf             # Security group definitions
+├── subnetgroup-rds.tf            # RDS subnet group for regional DB placement
+├── vpc.tf                        # VPC, subnets, gateways, etc.
+└── README.md                     # Secondary region documentation
+
 ```
 
 ---
