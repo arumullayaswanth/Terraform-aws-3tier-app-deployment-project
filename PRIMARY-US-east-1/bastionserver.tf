@@ -1,3 +1,4 @@
+# ------------------------- Bastion Host EC2 Instance -------------------------
 resource "aws_instance" "back" {
     ami = var.ami
     instance_type = var.instance-type
