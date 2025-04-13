@@ -1,5 +1,5 @@
 
-#  creating vpc 
+# Creating a Virtual Private Cloud (VPC)
 
 resource "aws_vpc" "three-tier" {
     cidr_block = "172.20.0.0/16"
@@ -8,7 +8,8 @@ resource "aws_vpc" "three-tier" {
         Name = "3-tietr-vpc"
     }
 }
-# for frontend load balancer 
+
+# Subnet for frontend load balancer in availability zone us-east-1a
 resource "aws_subnet" "pub1" {
     vpc_id = aws_vpc.three-tier.id
     cidr_block = "172.20.1.0/24"
@@ -18,7 +19,8 @@ resource "aws_subnet" "pub1" {
     Name = "pub-1a"
   }
 }
-# for frontend load balancer 
+
+# Subnet for frontend load balancer in availability zone us-east-1b
 resource "aws_subnet" "pub2" {
     vpc_id = aws_vpc.three-tier.id
     cidr_block = "172.20.2.0/24"
@@ -28,7 +30,8 @@ resource "aws_subnet" "pub2" {
     Name = "pub-2b"
   }
 }
-#fronend server
+
+# Subnet for frontend server in availability zone us-east-1a
 resource "aws_subnet" "prvt3" {
     vpc_id = aws_vpc.three-tier.id
     cidr_block = "172.20.3.0/24"
@@ -37,7 +40,7 @@ resource "aws_subnet" "prvt3" {
     Name = "prvt-3a"
   }
 }
-#fronend server
+Subnet for frontend server in availability zone us-east-1b
 resource "aws_subnet" "prvt4" {
     vpc_id = aws_vpc.three-tier.id
     cidr_block = "172.20.4.0/24"
@@ -47,7 +50,8 @@ resource "aws_subnet" "prvt4" {
   }
   
 }
-#Backend server 
+
+# Subnet for backend server in availability zone us-east-1a
 resource "aws_subnet" "prvt5" {
     vpc_id = aws_vpc.three-tier.id
     cidr_block = "172.20.5.0/24"
@@ -56,7 +60,8 @@ resource "aws_subnet" "prvt5" {
     Name = "prvt-5a"
   }
 }
-# Backend Server 
+
+# Subnet for backend server in availability zone us-east-1b
 resource "aws_subnet" "prvt6" {
     vpc_id = aws_vpc.three-tier.id
     cidr_block = "172.20.6.0/24"
@@ -65,7 +70,8 @@ resource "aws_subnet" "prvt6" {
     Name = "prvt-6b"
   }
 }
-#rds
+
+# Subnet for RDS instance in availability zone us-east-1a
 resource "aws_subnet" "prvt7" {
     vpc_id = aws_vpc.three-tier.id
     cidr_block = "172.20.7.0/24"
@@ -74,7 +80,8 @@ resource "aws_subnet" "prvt7" {
     Name = "prvt-7a"
   }
 }
-#rds
+
+# Subnet for RDS instance in availability zone us-east-1b
 resource "aws_subnet" "prvt8" {
     vpc_id = aws_vpc.three-tier.id
     cidr_block = "172.20.8.0/24"
@@ -83,21 +90,22 @@ resource "aws_subnet" "prvt8" {
     Name = "prvt-8b"
   }
 }
-#  creating internet gateway
 
+# Creating an Internet Gateway to allow internet access for the public subnet
 resource "aws_internet_gateway" "three-tier-ig" {
     vpc_id = aws_vpc.three-tier.id
     tags = {
         Name = "3-tier-ig"
     }
 }
-#  creating public route table
 
+# Creating a public route table to allow routing internet traffic through the Internet Gateway
 resource "aws_route_table" "three-tier-pub-rt" {
     vpc_id = aws_vpc.three-tier.id
     tags = {
       Name = "3-tier-pub-rt"
     }
+# Define a route in the public route table to send all internet-bound traffic (0.0.0.0/0) through the Internet Gateway
   route {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.three-tier-ig.id
@@ -124,7 +132,7 @@ resource "aws_eip" "eip" {
   
 }
 
-#  creating nat gateway
+# Creating a NAT Gateway for private subnet internet access
 resource "aws_nat_gateway" "cust-nat" {
   subnet_id = aws_subnet.pub1.id
   connectivity_type = "public"
@@ -134,7 +142,7 @@ resource "aws_nat_gateway" "cust-nat" {
   }
 }
 
-#  creating private route table 
+# Creating a private route table to route traffic through the NAT Gateway
 resource "aws_route_table" "three-tier-prvt-rt" {
     vpc_id = aws_vpc.three-tier.id
     tags = {
@@ -170,13 +178,13 @@ resource "aws_route_table_association" "prvivate-6b" {
     subnet_id = aws_subnet.prvt6.id
 }
 
-#  attaching prvt-7a subnet to private route table
+# Associating prvt-7a subnet with the private route table
 resource "aws_route_table_association" "prvivate-7a" {
     route_table_id = aws_route_table.three-tier-prvt-rt.id
     subnet_id = aws_subnet.prvt7.id
 }
 
-#  attaching prvt-8b subnet to private route table
+# Associating prvt-8b subnet with the private route table
 resource "aws_route_table_association" "prvivate-8b" {
     route_table_id = aws_route_table.three-tier-prvt-rt.id
     subnet_id = aws_subnet.prvt8.id
