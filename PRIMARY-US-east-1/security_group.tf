@@ -1,11 +1,12 @@
-# Create a sgs
 
+# Creating a security group for Bastion Host
 resource "aws_security_group" "bastion-host" {
   name        = "appserver-SG"
   description = "Allow inbound traffic from ALB"
   vpc_id      = aws_vpc.three-tier.id
   depends_on = [ aws_vpc.three-tier ]
 
+  # Inbound rule allowing SSH access (port 22) from anywhere (0.0.0.0/0)
  ingress {
     description     = "Allow traffic from web layer"
     from_port       = 22
@@ -14,6 +15,7 @@ resource "aws_security_group" "bastion-host" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  # Outbound rule allowing all traffic (0.0.0.0/0) to anywhere.
   egress {
     from_port   = 0
     to_port     = 0
@@ -27,14 +29,14 @@ resource "aws_security_group" "bastion-host" {
   
 }
 
-#  alb-frontend-sg
-
+# Creating a security group for the frontend ALB (Application Load Balancer)
 resource "aws_security_group" "alb-frontend-sg" {
   name        = "alb-frontend-sg"
   description = "Allow inbound traffic from ALB"
   vpc_id      = aws_vpc.three-tier.id
   depends_on = [ aws_vpc.three-tier ]
 
+# Inbound rule allowing HTTP (port 80) traffic from anywhere (0.0.0.0/0)
  ingress {
     description     = "http"
     from_port       = 80
@@ -42,6 +44,7 @@ resource "aws_security_group" "alb-frontend-sg" {
     protocol        = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+  # Inbound rule allowing HTTPS (port 443) traffic from anywhere (0.0.0.0/0)
   ingress {
     description     = "https"
     from_port       = 443
@@ -50,6 +53,7 @@ resource "aws_security_group" "alb-frontend-sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  # Outbound rule allowing all traffic (0.0.0.0/0) to anywhere.
   egress {
     from_port   = 0
     to_port     = 0
@@ -64,14 +68,14 @@ resource "aws_security_group" "alb-frontend-sg" {
 }
 
 
-#  alb-backend-sg
-
+# Creating a security group for the backend ALB (Application Load Balancer)
 resource "aws_security_group" "alb-backend-sg" {
   name        = "alb-backend-sg"
   description = "Allow inbound traffic ALB"
   vpc_id      = aws_vpc.three-tier.id
   depends_on = [ aws_vpc.three-tier ]
 
+  # Inbound rule allowing HTTP (port 80) traffic from anywhere (0.0.0.0/0)
  ingress {
     description     = "http"
     from_port       = 80
@@ -79,6 +83,8 @@ resource "aws_security_group" "alb-backend-sg" {
     protocol        = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  # Inbound rule allowing HTTPS (port 443) traffic from anywhere (0.0.0.0/0)
   ingress {
     description     = "https"
     from_port       = 443
@@ -87,6 +93,7 @@ resource "aws_security_group" "alb-backend-sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  # Outbound rule allowing all traffic (0.0.0.0/0) to anywhere.
   egress {
     from_port   = 0
     to_port     = 0
@@ -100,13 +107,14 @@ resource "aws_security_group" "alb-backend-sg" {
 
 }
 
-# frontend server sg
+# Creating a security group for the frontend server
 resource "aws_security_group" "frontend-server-sg" {
   name        = "frontend-server-sg"
   description = "Allow inbound traffic "
   vpc_id      = aws_vpc.three-tier.id
   depends_on = [ aws_vpc.three-tier,aws_security_group.alb-frontend-sg ]
 
+  # Inbound rule allowing HTTP (port 80) traffic from anywhere (0.0.0.0/0)
  ingress {
     description     = "http"
     from_port       = 80
@@ -114,6 +122,7 @@ resource "aws_security_group" "frontend-server-sg" {
     protocol        = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+  # Inbound rule allowing SSH (port 22) traffic from anywhere (0.0.0.0/0)
   ingress {
     description     = "ssh"
     from_port       = 22
@@ -122,7 +131,7 @@ resource "aws_security_group" "frontend-server-sg" {
     cidr_blocks = ["0.0.0.0/0"]
 
   }
-
+  # Outbound rule allowing all traffic (0.0.0.0/0) to anywhere.
   egress {
     from_port   = 0
     to_port     = 0
@@ -137,14 +146,14 @@ resource "aws_security_group" "frontend-server-sg" {
 }
 
 
-#  backend-server-sg
-
+# Creating a security group for the backend server
 resource "aws_security_group" "backend-server-sg" {
   name        = "backend-server-sg"
   description = "Allow inbound traffic"
   vpc_id      = aws_vpc.three-tier.id
   depends_on = [ aws_vpc.three-tier,aws_security_group.alb-backend-sg ]
 
+  # Inbound rule allowing HTTP (port 80) traffic from anywhere (0.0.0.0/0)
  ingress {
     description     = "http"
     from_port       = 80
@@ -152,6 +161,8 @@ resource "aws_security_group" "backend-server-sg" {
     protocol        = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  # Inbound rule allowing SSH (port 22) traffic from anywhere (0.0.0.0/0)
   ingress {
     description     = "ssh"
     from_port       = 22
@@ -160,6 +171,7 @@ resource "aws_security_group" "backend-server-sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  # Outbound rule allowing all traffic (0.0.0.0/0) to anywhere.
   egress {
     from_port   = 0
     to_port     = 0
@@ -173,7 +185,7 @@ resource "aws_security_group" "backend-server-sg" {
 }
 
 
-# database security group
+# Creating a security group for the RDS (database)
 resource "aws_security_group" "book-rds-sg" {
   name        = "book-rds-sg"
   description = "Allow inbound "
@@ -188,6 +200,7 @@ resource "aws_security_group" "book-rds-sg" {
     cidr_blocks = ["0.0.0.0/0"]
   
  }
+  # Outbound rule allowing all traffic (0.0.0.0/0) to anywhere.
   egress {
     from_port   = 0
     to_port     = 0
