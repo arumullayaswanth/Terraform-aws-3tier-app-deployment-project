@@ -40,7 +40,7 @@ resource "aws_subnet" "prvt3" {
     Name = "prvt-3a"
   }
 }
-Subnet for frontend server in availability zone us-east-1b
+#Subnet for frontend server in availability zone us-east-1b
 resource "aws_subnet" "prvt4" {
     vpc_id = aws_vpc.three-tier.id
     cidr_block = "172.20.4.0/24"
