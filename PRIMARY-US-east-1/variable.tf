@@ -13,7 +13,7 @@ variable "rds-username" {
 variable "ami" {
     description = "ami"
     type = string
-    default = "ami-0e9bbd70d26d7cf4f"  #Amazon Linux 2 AMI 
+    default = "ami-0731becbf832f281e"  #Ubuntu Server 24.04 LTS (HVM), SSD Volume Type
   
 }
 variable "instance-type" {
