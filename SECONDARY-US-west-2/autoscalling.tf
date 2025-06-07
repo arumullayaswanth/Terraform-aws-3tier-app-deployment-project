@@ -1,8 +1,8 @@
 # Autoscaling Group Resource
 resource "aws_autoscaling_group" "frontend-asg" {
   name_prefix = "frontend-asg"
-  desired_capacity   = 1
-  max_size           = 1
+  desired_capacity   = 2
+  max_size           = 4
   min_size           = 1
   vpc_zone_identifier = [aws_subnet.prvt3.id, aws_subnet.prvt4.id]
   target_group_arns = [aws_lb_target_group.front_end.arn]
@@ -34,8 +34,8 @@ resource "aws_autoscaling_group" "frontend-asg" {
 # Autoscaling Group Resource
 resource "aws_autoscaling_group" "backend-asg" {
   name_prefix = "backend-asg"
-  desired_capacity   = 1
-  max_size           = 1
+  desired_capacity   = 2
+  max_size           = 4
   min_size           = 1
   vpc_zone_identifier = [aws_subnet.prvt5.id, aws_subnet.prvt6.id]
   target_group_arns = [aws_lb_target_group.back_end.arn]
