@@ -97,126 +97,123 @@ You will deploy two EC2 instances: a frontend server and a backend server. Each 
 
 ## Backend Server Configuration
 
-### Step 1: Install Dependencies
 
-\`\`\`bash
+# PART 3: Backend Server Configuration
+
+## ✅ Step 1: Install Dependencies
+
+**Connect your frontend-server**
+
+```bash
 sudo apt update -y
 sudo apt upgrade -y
 sudo -i
+```
 
+1. On the backend EC2, create a shell script:
+
+```bash
 vim test.sh
-\`\`\`
+```
 
-Paste this:
+2. Paste this script:
 
-\`\`\`bash
+```bash
 #!/bin/bash
 sudo apt update -y
-curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash - &&\
 sudo apt-get install -y nodejs -y
 sudo npm install -g corepack -y
 corepack enable
 corepack prepare yarn@stable --activate
 sudo npm install -g pm2
-\`\`\`
+```
 
-Run:
+3. Run the script:
 
-\`\`\`bash
+```bash
 chmod +x test.sh
 ./test.sh
-\`\`\`
+```
 
-### Step 2: Clone and Configure App
+---
 
-\`\`\`bash
+## ✅ Step 2: Clone Repo & Setup `.env`
+
+1. Clone the repo:
+
+```bash
 git clone https://github.com/arumullayaswanth/Terraform-aws-3tier-app-deployment-project.git
-cd Terraform-aws-3tier-app-deployment-project/backend
-\`\`\`
+```
 
-Create `.env` file:
+2. Navigate to the client directory:
 
-\`\`\`bash
+```bash
+ls
+cd Terraform-aws-3tier-app-deployment-project
+ls
+cd backend
+ls
+cat .env
+```
+
+Example `.env` values:
+
+```env
 DB_HOST=book.rds.com
 DB_USERNAME=admin
 DB_PASSWORD="yaswanth"
 PORT=3306
-\`\`\`
+```
 
-### Step 3: Install App and PM2
+3. Create or edit `.env`:
 
-\`\`\`bash
+```bash
+vi .env
+```
+
+4. Add this content (change values accordingly):
+
+```env
+DB_HOST=book.rds.com
+DB_USERNAME=admin
+DB_PASSWORD="yaswanth"
+PORT=3306
+```
+
+---
+
+## ✅ Step 3: Install & Start App with PM2
+
+Run:
+
+```bash
 npm install
 npm install dotenv
 sudo pm2 start index.js --name "backendApi"
-\`\`\`
+```
 
-### Step 4: Install MySQL
+---
 
-\`\`\`bash
+## ✅ Step 4: Install MySQL on Ubuntu
+
+```bash
 sudo apt install mysql-server -y
 sudo systemctl start mysql
 sudo systemctl enable mysql
+sudo systemctl status mysql
 mysql --version
-\`\`\`
+```
+
+---
+
+✅ Now your backend server is configured successfully!
+
 
 ---
 
 ## Frontend Server Configuration
 
-### Step 1: Install Dependencies
-
-\`\`\`bash
-sudo apt update -y
-sudo apt upgrade -y
-sudo -i
-
-vim test.sh
-\`\`\`
-
-Paste this:
-
-\`\`\`bash
-#!/bin/bash
-sudo apt update -y
-sudo apt install apache2 -y
-curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-sudo apt-get install -y nodejs -y
-sudo npm install -g corepack -y
-corepack enable
-corepack prepare yarn@stable --activate
-\`\`\`
-
-Run:
-
-\`\`\`bash
-chmod +x test.sh
-./test.sh
-\`\`\`
-
-### Step 2: Clone and Configure App
-
-\`\`\`bash
-git clone https://github.com/arumullayaswanth/Terraform-aws-3tier-app-deployment-project.git
-cd Terraform-aws-3tier-app-deployment-project/client/src/pages
-\`\`\`
-
-Edit `config.js`:
-
-\`\`\`js
-const API_BASE_URL = "http://yaswanth.aluru.site";
-export default API_BASE_URL;
-\`\`\`
-
-### Step 3: Build and Deploy
-
-\`\`\`bash
-cd ../../../
-npm install
-npm run build
-sudo cp -r build/* /var/www/html
-systemctl status apache2
-\`\`\`
 
 ---
 
