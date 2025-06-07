@@ -1,7 +1,7 @@
 # Autoscaling Group for Frontend Servers
 resource "aws_autoscaling_group" "frontend-asg" {
   name_prefix = "frontend-asg"
-  desired_capacity   = 1
+  desired_capacity   = 2
   max_size           = 1
   min_size           = 1
 
@@ -41,7 +41,7 @@ resource "aws_autoscaling_group" "frontend-asg" {
 # Autoscaling Group for Backend Servers
 resource "aws_autoscaling_group" "backend-asg" {
   name_prefix = "backend-asg"
-  desired_capacity   = 1
+  desired_capacity   = 2
   max_size           = 1
   min_size           = 1
 
