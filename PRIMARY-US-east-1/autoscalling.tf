@@ -2,7 +2,7 @@
 resource "aws_autoscaling_group" "frontend-asg" {
   name_prefix = "frontend-asg"
   desired_capacity   = 2
-  max_size           = 1
+  max_size           = 4
   min_size           = 1
 
   # VPC Subnets in which the instances should be launched.
@@ -42,7 +42,7 @@ resource "aws_autoscaling_group" "frontend-asg" {
 resource "aws_autoscaling_group" "backend-asg" {
   name_prefix = "backend-asg"
   desired_capacity   = 2
-  max_size           = 1
+  max_size           = 4
   min_size           = 1
 
   # VPC Subnets in which the instances should be launched.
