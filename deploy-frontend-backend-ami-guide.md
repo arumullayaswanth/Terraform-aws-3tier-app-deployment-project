@@ -1,660 +1,264 @@
-How to deploy frontend AMI and backend AMI now you can see how I am deploying ( You can do this process in manually )
 
-Create two public servers one frontend server and backend server and deploy 
+# Terraform AWS 3-Tier App Deployment (Manual EC2 Setup Guide)
 
+## Table of Contents
 
+1. [Overview](#overview)  
+2. [Frontend EC2 Setup](#frontend-ec2-setup)  
+3. [Backend EC2 Setup](#backend-ec2-setup)  
+4. [Backend Server Configuration](#backend-server-configuration)  
+5. [Frontend Server Configuration](#frontend-server-configuration)  
+6. [Create AMIs](#create-amis)  
+7. [Terraform Code Updates](#terraform-code-updates)  
+8. [DNS Configuration with Route 53](#dns-configuration-with-route-53)  
+9. [HTTPS Setup with ACM](#https-setup-with-acm)  
+10. [Data Seeding in RDS](#data-seeding-in-rds)  
+11. [Destroy Infrastructure](#destroy-infrastructure)
 
-Later you can take AMI and delete Everything From that AMI you can run a terraform script
+---
 
+## Overview
 
+You will deploy two EC2 instances: a frontend server and a backend server. Each will host parts of a full-stack app connected to an RDS MySQL database. After deploying manually and taking AMIs, Terraform can recreate the infrastructure using your saved AMIs.
 
+---
 
+## Frontend EC2 Setup
 
+1. Go to EC2 → Launch Instance  
+2. Name: `frontend-server`  
+3. OS: Ubuntu Server 24.04 LTS  
+4. Instance type: `t2.micro`  
+5. Network: Use public subnet in `project-vpc`  
+6. Enable: Auto-assign public IP  
+7. Security Group:
+   - HTTP (80)
+   - HTTPS (443)
+   - SSH (22)  
+8. Storage: Default  
+9. Launch instance
 
-## PART 1: Create EC2 Instances (Frontend server)
+---
 
-Go to AWS EC2 console--->Instances--->Launch an instance
+## Backend EC2 Setup
 
+Repeat same steps as frontend, but:
 
-Name : frontend-server
-Application and OS Images (Amazon Machine Image) : Ubuntu Server 24.04 LTS
-Instance type : t2.micro
-Select project-vpc and a public subnet
+- Name: `backend-server`
 
-Enable Auto-assign Public IP
+---
 
-Add a Security Group with:
+## Backend Server Configuration
 
-HTTP (80)
+### Step 1: Install Dependencies
 
-SSH (22)
-
-HTTPS (443)
-
-Configure storage : Add storage (default is fine)
-
-Launch frontend-server instances 
-
-
-
-## PART 2: Create EC2 Instances (Backend server)
-
-Go to AWS EC2 console--->Instances--->Launch an instance
-
-Name : Backend-server
-Application and OS Images (Amazon Machine Image) : Ubuntu Server 24.04 LTS
-Instance type : t2.micro
-Select project-vpc and a public subnet
-
-Enable Auto-assign Public IP
-
-Add a Security Group with:
-
-HTTP (80)
-
-SSH (22)
-
-HTTPS (443)
-
-Configure storage : Add storage (default is fine)
-
-Launch Backend-server instances 
-
-
-
-## 🖥️ BACKEND SERVER CONFIGURATION
-
-### ✅ Step 1: Install Dependencies
-
-connect your frontend-server
-
-```
+\`\`\`bash
 sudo apt update -y
-```
-```
 sudo apt upgrade -y
-```
-```
 sudo -i
-```
 
-1.On the backend EC2, create a shell script:
-
-```
 vim test.sh
-```
+\`\`\`
 
-2.Paste this script:
-  
-```
-bash
+Paste this:
+
+\`\`\`bash
 #!/bin/bash
-```
 sudo apt update -y
-```
-curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash - &&\
-```
+curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
 sudo apt-get install -y nodejs -y
-```
-```
 sudo npm install -g corepack -y
-```
 corepack enable
 corepack prepare yarn@stable --activate
-```
 sudo npm install -g pm2
-```
-```
+\`\`\`
 
-
-3.Run the script:
-
-```
-chmod +x test.sh
-```
-./test.sh
-
-
-
-
-### ✅ Step 2: Clone Repo & Setup .env
-
-
-1. Clone the repo:
-    
-    git clone https://github.com/arumullayaswanth/Terraform-aws-3tier-app-deployment-project.git
-
-2. Navigate to the client directory:
-  ls
-  cd Terraform-aws-3tier-app-deployment-project
-  ls
-  cd backend
-  ls
-  cat .env
-  
-  DB_HOST=book.rds.com
-  DB_USERNAME=admin
-  DB_PASSWORD="yaswanth"
-  PORT=3306
-
-3. Create or edit .env:
-   
-   vi .env
-
-4. Add this content (change values accordingly):
-
-
-  DB_HOST=book.rds.com
-  DB_USERNAME=admin
-  DB_PASSWORD="yaswanth"
-  PORT=3306
-
-
-### ✅ Step 3: Install & Start App with PM2
 Run:
 
-npm install
-npm install dotenv
-```
-sudo pm2 start index.js --name "backendApi"
-```
-
-
-### ✅ Step 4: Install MySQL on Ubuntu
-
-```
-sudo apt install mysql-server -y
-```
-```
-sudo systemctl start MySQL
-```
-```
-sudo systemctl enable mysql
-```
-```
-sudo systemctl status mysql
-```
-```
-mysql --version
-```
-
-
-
-now your frontend-server done
-
-
-  
-
-
-
-
-
-## 🖥️ FRONTEND SERVER CONFIGURATION
-
-connect your frontend-server
-
-```
-sudo apt update -y
-```
-```
-sudo apt upgrade -y
-```
-```
-sudo -i
-```
-
-### ✅ Step 1: Install Dependencies
-
-1.On the frontend EC2, create a shell script:
-
-```
-vim test.sh
-```
-
-2.Paste this script:
-
-
-```
-bash
-#!/bin/bash
-```
-sudo apt update -y
-```
-```
-sudo apt install apache2 -y
-```
-curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash - &&\
-```
-sudo apt-get install -y nodejs -y
-```
-```
-sudo npm install -g corepack -y
-```
-corepack enable
-corepack prepare yarn@stable --activate
-```
-
-3.Run the script:
-
-```
+\`\`\`bash
 chmod +x test.sh
-```
 ./test.sh
+\`\`\`
 
+### Step 2: Clone and Configure App
 
-
-
-### ✅ Step 2: Clone Git Repo & Edit config.js
-
-
-1. Clone the repo:
-    
-    git clone https://github.com/arumullayaswanth/Terraform-aws-3tier-app-deployment-project.git
-
-2. Navigate to the client directory:
-  ls
-  cd Terraform-aws-3tier-app-deployment-project
-  ls
-  cd client
-  ls
-  cd src
-  ls
-  cd pages
-  ls
-  cat config.js
-
-3.Edit config.js:
-
-    vim config.js
-    
-
-   // const API_BASE_URL = "http://3.84.145.194:84";
- const API_BASE_URL = "http://yaswanth.aluru.site";
-// export default API_BASE_URL;
-// const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://backend";
-// export default API_BASE_URL;
-// const API_BASE_URL = "REACT_APP_API_BASE_URL_PLACEHOLDER";
-export default API_BASE_URL;
-
-
-4.Find and update this line:
- 
-const API_BASE_URL = "http://yaswanth.aluru.site";
-
-Replace to this
-
-### ✅ Step 3: Build and Deploy App
-
-From client folder, run:
-
-root@ip-172-31-81-171:~/Terraform-aws-3tier-app-deployment-project/client/src/pages# : cd ..
-root@ip-172-31-81-171:~/Terraform-aws-3tier-app-deployment-project/client/src# : cd ..
-root@ip-172-31-81-171:~/Terraform-aws-3tier-app-deployment-project/client# ls
-npm install
-npm run build
-```
-sudo cp -r build/* /var/www/html
-```
-systemctl status apache2
-
-now your frontend-server done
-
-
-
-
-### 💾 STEP 4: Create AMIs (Optional but recommended)
-Go to EC2 → Select each server → Actions → Image → Create image
-
-Name them: frontend-ami
-Create image
-
-
-### 💾 STEP 5: Create AMIs (Optional but recommended)
-Go to EC2 → Select each server → Actions → Image → Create image
-
-Name them: backend-ami
-Create image
-
-
-
- Step-by-Step: Terminate EC2 Instances (Frontend & Backend)
-⚠️ WARNING: This action is irreversible. All data on the instances (unless backed up via AMIs, snapshots, or EBS) will be permanently lost.
-
-### ✅ Step 1: Login to AWS Console
-Open browser and go to:
-https://console.aws.amazon.com
-
-Sign in to your AWS account.
-
-### ✅ Step 2: Navigate to EC2 Dashboard
-In the AWS Console, search for EC2 in the top search bar.
-
-Click on EC2 service → This opens the EC2 Dashboard.
-
-### ✅ Step 3: Select the Instances
-In the left menu, click on Instances (under Instances section).
-
-You’ll see a list of all running EC2 instances.
-
-Select the checkbox next to:
-
-Your Frontend instance
-
-Your Backend instance
-
-💡 Use instance names to identify them, such as frontend-server and backend-server.
-
-
-
-------------------------------------------------------------------------------------------------------
-If you want to use my  Terraform code you have to change these things and you can use directly my code
-
-
- 
-
-change -1
-
-
-Terraform-aws-3tier-app-deployment-project/PRIMARY-US-east-1
-/launctemp.tf
-
-
-
-
-  filter {
-    name   = "name"
-    values = ["frontend-ami"] # Use your AMI name pattern (replace your AMI Name)
-  }
-}
-
-
-  filter {
-    name   = "name"
-    values = ["backend-ami"] # Use your AMI name pattern  (replace your AMI Name)
-  }
-}
-
-
-
-
-change -2
-
-Create a keypair manually and update keypair name in code
-
-Terraform-aws-3tier-app-deployment-project/PRIMARY-US-east-1
-/variable.tf
-
-variable "key-name" {
-    description = "keyname"
-    type = string
-    default = "us-east-1"
-
-
----------------------------------------
-
-open  VScode 
-nwe Terminal
-
-```
+\`\`\`bash
 git clone https://github.com/arumullayaswanth/Terraform-aws-3tier-app-deployment-project.git
-```
+cd Terraform-aws-3tier-app-deployment-project/backend
+\`\`\`
 
-ls
-```
-cd PRIMARY-US-east-1/
-```
-ls
+Create `.env` file:
 
-
-
-
-
-### ✅ Getting Started
-
-Initialize Terraform:
-```
-terraform init
-```
-
-Preview the plan:
-```
-terraform plan
-```
-
-Apply the configuration:
-```
-terraform apply --auto-approve
-```
-
-Check the Current State
-```
-terraform state list
-```
-
-
-----------------------------------------
-Once terraform created the infrastructure and next you have to do the following steps
-
-
-
-### step -1 
-
-Before you are creating backend Route 53 Hosted zone you have go and check the code on this path
-
-Terraform-aws-3tier-app-deployment-project/backend /.env
-
+\`\`\`bash
 DB_HOST=book.rds.com
 DB_USERNAME=admin
 DB_PASSWORD="yaswanth"
 PORT=3306
+\`\`\`
 
-### step-1.2
+### Step 3: Install App and PM2
 
-Configure Route 53 Hosted Zone for Rds endpoint
+\`\`\`bash
+npm install
+npm install dotenv
+sudo pm2 start index.js --name "backendApi"
+\`\`\`
 
- Path: Route 53 → Hosted Zones → Create hosted zone
+### Step 4: Install MySQL
 
-Domain name:rds.com
-Type: Private hosted zone
-VPCs to associate with the hosted zone
-region : us-east-1 (US East (N Virginial)
-VPC ID : (3-tietr-vpc)
-Click Create hosted zone
-
-### step-1.3
-
- Create A Record in Route 53
-Path: Route 53 → Hosted zones → rds.com → Create record
-
-Record name: book
-Record type: CNAME - Routes traffic
-Routing policy: Simple
-Alias: Yes
-value : book-rds.c0n8k0a0swtz.us-east-1.rds.amazonaws.com //give your book db rds end point
-
-Click Create record
-
-
-
--------------------------------
- 
-
-### step-2
-
-Before you are creating frontend Route 53 Hosted zone you have go and check the code on this path
-
-Terraform-aws-3tier-app-deployment-project/client/src/pages
-/config.js
-
-// const API_BASE_URL = "http://3.84.145.194:84";
- const API_BASE_URL = "http://yaswanth.aluru.site";
-// export default API_BASE_URL;
-// const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://backend";
-// export default API_BASE_URL;
-// const API_BASE_URL = "REACT_APP_API_BASE_URL_PLACEHOLDER";
-export default API_BASE_URL;
-
-
-### step-2.2
-
- Configure Route 53 Hosted Zone
-Path: Route 53 → Hosted Zones → Create hosted zone
-
-Domain name: aluru.site
-Type: Public hosted zone
-Click Create hosted zone
-
-
-### Step 2.3
-
-Update Domain Nameservers in Hostinger
-Path: https://hpanel.hostinger.com/domain → Domains → aluru.site → Manage → DNS / Nameservers
-
-Click Edit Nameservers
-Paste the 4 NS records from Route 53:
-ns-865.awsdns-84.net
-ns-1995.awsdns-97.co.uk
-ns-1418.awsdns-59.org
-ns-265.awsdns-73.com
-Click Save
-
-
-
-### Step 2.4:Create A Record in Route 53
-
-Path: Route 53 → Hosted zones → aluru.site → Create record
-
-Record name: yaswanth
-Record type: A - IPv4 address
-Routing policy: Simple
-Alias: Yes
-Route traffic to : Alias to Application and Classic Load Balancer
-Region: US East (N. Virginia)
-Alias target value: dualstack.backend-alb-195130194.us-east-1.elb.amazonaws.com //backend-load balancer
-Click Create record
-
----------------------------
-
- Step 3: Request HTTPS Certificate using ACM
-Path: AWS Certificate Manager → Request Certificate
-
-Select: Request a public certificate
-Click Next
-Fully qualified domain name: *.aluru.site
-Validation method: DNS validation (recommended)
-Click Request
-
-
- Step 3.2: Validate Domain in Route 53
-Path: AWS Certificate Manager → Certificates --> Domains  → Create records in Route 53
-
-Under domain, click Create DNS record in Amazon Route 53
-Select your hosted zone: aluru.site
-Click Create record
-Wait a few minutes for validation to complete
-
-
- Step 3.3: Add HTTPS Listener to ALB
-Path: EC2 → Load Balancers → backend-alb → Listeners → Add listener
-
-Protocol: HTTPS
-Port: 443
-Default action:
-Routing action :Forward to target groups 
-Target group : backend-tg
-Security policy: ELBSecurityPolicy-2021-06 (or latest)
-Certificate source : From ACM
-Certificate (from ACM) : *.aluru.site
-Click Add
-
-
----------------------------------------
-
-
-
-
--------------------------------
-### step-3
-
-### NOTE:
-Remember this what I am trying to say my database inside when you can access frontend in load balance so you are able to see first few records from the database later onwards after that you can insert a record so initial when you accessive frontend load balance you have to see your few records in that case you need to connect this database insective records to access first time to see this records in that case connect RDS and insert your records while accessing time you can see those records and after that you can insert  the  to frontend and backend API methods only.  Initially dashboard we need required.
-
-connect to bastion-server
-
-```
-sudo -i 
-```
-
-```
-git clone https://github.com/arumullayaswanth/Terraform-aws-3tier-app-deployment-project.git
-```
-
-```
-cd Terraform-aws-3tier-app-deployment-project
-```
-ls
- 
-```
-cd backend
-```
-
-ls
-
-mysql
-
-```
-apt install mysql-client-core-8.0
-```
-
-```
+\`\`\`bash
+sudo apt install mysql-server -y
+sudo systemctl start mysql
+sudo systemctl enable mysql
 mysql --version
-```
+\`\`\`
 
-```
+---
+
+## Frontend Server Configuration
+
+### Step 1: Install Dependencies
+
+\`\`\`bash
+sudo apt update -y
+sudo apt upgrade -y
+sudo -i
+
+vim test.sh
+\`\`\`
+
+Paste this:
+
+\`\`\`bash
+#!/bin/bash
+sudo apt update -y
+sudo apt install apache2 -y
+curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+sudo apt-get install -y nodejs -y
+sudo npm install -g corepack -y
+corepack enable
+corepack prepare yarn@stable --activate
+\`\`\`
+
+Run:
+
+\`\`\`bash
+chmod +x test.sh
+./test.sh
+\`\`\`
+
+### Step 2: Clone and Configure App
+
+\`\`\`bash
+git clone https://github.com/arumullayaswanth/Terraform-aws-3tier-app-deployment-project.git
+cd Terraform-aws-3tier-app-deployment-project/client/src/pages
+\`\`\`
+
+Edit `config.js`:
+
+\`\`\`js
+const API_BASE_URL = "http://yaswanth.aluru.site";
+export default API_BASE_URL;
+\`\`\`
+
+### Step 3: Build and Deploy
+
+\`\`\`bash
+cd ../../../
+npm install
+npm run build
+sudo cp -r build/* /var/www/html
+systemctl status apache2
+\`\`\`
+
+---
+
+## Create AMIs
+
+1. Go to EC2 → Select Instance → Actions → Image → Create image  
+2. Name them:
+   - `frontend-ami`
+   - `backend-ami`
+
+---
+
+## Terraform Code Updates
+
+### Update AMI Filters in `launctemp.tf`:
+
+\`\`\`hcl
+filter {
+  name   = "name"
+  values = ["frontend-ami"]
+}
+...
+filter {
+  name   = "name"
+  values = ["backend-ami"]
+}
+\`\`\`
+
+### Update Key Pair Name in `variable.tf`:
+
+\`\`\`hcl
+variable "key-name" {
+  default = "us-east-1"
+}
+\`\`\`
+
+---
+
+## DNS Configuration with Route 53
+
+### Backend Private Hosted Zone
+
+- Domain: `rds.com`
+- A Record:
+  - Name: `book`
+  - Value: RDS Endpoint
+
+### Frontend Public Hosted Zone
+
+- Domain: `aluru.site`
+- A Record:
+  - Name: `yaswanth`
+  - Target: Backend ALB
+
+---
+
+## HTTPS Setup with ACM
+
+1. Request public certificate: `*.aluru.site`
+2. DNS Validation via Route 53
+3. Add HTTPS Listener on backend ALB
+
+---
+
+## Data Seeding in RDS
+
+On Bastion:
+
+\`\`\`bash
+git clone https://github.com/arumullayaswanth/Terraform-aws-3tier-app-deployment-project.git
+cd Terraform-aws-3tier-app-deployment-project/backend
+apt install mysql-client-core-8.0
 mysql -h book.rds.com -u admin -p < test.sql
-```
+\`\`\`
 
+Verify:
 
-Connect your database Weather script is executed or not you can cheque it once 
-```
+\`\`\`bash
 mysql -h book.rds.com -u admin -p
-```
-yaswanth
-
 SHOW DATABASES;
 USE test;
 SHOW TABLES;
 SELECT * FROM books;
+\`\`\`
 
-### step-4
+---
 
-Even you can check backend Load balancer it will respond hello backend is working fine 
+## Destroy Infrastructure
 
-Let's access fronend load balance
-
-frontend load balancer  I am accessing request will go to  frontend server frontend server inside config.js in config .js in route 53 record I have given route 53 is redirecting into backend load balance and backend load balance redirecting to back in server and back and server inside . env file is there that is directing into private hosted zone in route 53 from there to RDS
-
-
-
-
-
---------------------
-
-
-
-
-# Destroy resources
-```
+\`\`\`bash
 terraform destroy --auto-approve
-```
-
-
-
-
-
-
-
-
-
-
-
+\`\`\`
