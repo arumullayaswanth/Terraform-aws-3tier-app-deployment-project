@@ -61,9 +61,37 @@ You will deploy two EC2 instances: a frontend server and a backend server. Each 
 
 ## Backend EC2 Setup
 
-Repeat same steps as frontend, but:
+# PART 2: Create EC2 Instances (Backend Server)
 
-- Name: `backend-server`
+## Step-by-Step Instructions
+
+1. **Login to AWS Console**
+   - Navigate to: [https://console.aws.amazon.com/ec2](https://console.aws.amazon.com/ec2)
+
+2. **Launch a New EC2 Instance**
+   - Go to: `EC2 Dashboard` → `Instances` → `Launch Instance`
+
+3. **Configure Instance Details**
+   - **Name**: `backend-server`
+   - **Application and OS Image (AMI)**: `Ubuntu Server 24.04 LTS`
+   - **Instance Type**: `t2.micro`
+   - **VPC**: Select `project-vpc`
+   - **Subnet**: Choose a **public subnet**
+
+4. **Network Settings**
+   - **Enable Auto-assign Public IP**
+
+5. **Configure Security Group**
+   - Create a new security group or choose an existing one with the following inbound rules:
+     - **HTTP** (Port 80)
+     - **HTTPS** (Port 443)
+     - **SSH** (Port 22)
+
+6. **Add Storage**
+   - Use the default storage settings (or customize as per requirement)
+
+7. **Launch Instance**
+   - Click on `Launch Instance` to deploy the `backend-server`
 
 ---
 
