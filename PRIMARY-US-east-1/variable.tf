@@ -1,7 +1,7 @@
 variable "rds-password" {
     description = "rds password"
     type = string
-    default = "srivardhan"
+    default = "yaswanth"
   
 }
 variable "rds-username" {
