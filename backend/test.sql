@@ -25,6 +25,8 @@ CREATE TABLE IF NOT EXISTS `books` (
   `cover` varchar(500) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
+
+
 -- Dumping data for table `books`
 INSERT INTO `books` (`id`, `title`, `desc`, `price`, `cover`) VALUES
 (1, 'MultiCloud', 'this is mutlicloud with devops cource by veera sir nareshit ', 2343.2, 'https://docs.multy.dev/assets/images/multi-cloud-314609adeec670988dff0882a93fdcb0.png'),
@@ -40,3 +42,15 @@ ALTER TABLE `books`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 COMMIT;
+
+
+
+
+
+
+
+
+
+
+
+
