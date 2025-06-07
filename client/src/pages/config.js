@@ -1,8 +1,8 @@
 // const API_BASE_URL = "http://3.84.145.194:84";
-// const API_BASE_URL = "http://yaswanth.aliru.site";
+ const API_BASE_URL = "http://yaswanth.aluru.site";
 // export default API_BASE_URL;
 // const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://backend";
 // export default API_BASE_URL;
-const API_BASE_URL = "REACT_APP_API_BASE_URL_PLACEHOLDER";
+// const API_BASE_URL = "REACT_APP_API_BASE_URL_PLACEHOLDER";
 export default API_BASE_URL;
 
