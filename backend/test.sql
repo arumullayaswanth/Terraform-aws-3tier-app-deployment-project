@@ -16,7 +16,6 @@ CREATE DATABASE IF NOT EXISTS test;
 -- Use the test database
 USE test;
 
--- Table structure for table `books`
 CREATE TABLE IF NOT EXISTS `books` (
   `id` int(11) NOT NULL,
   `title` varchar(300) NOT NULL,
