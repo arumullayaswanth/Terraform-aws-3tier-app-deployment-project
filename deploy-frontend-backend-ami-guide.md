@@ -11,10 +11,7 @@
 6. [Create AMIs](#create-amis)
 7. [Terminate EC2 Instances(Frontend & Backend)](#Terminate-EC2-Instances (Frontend & Backend))
 8. [Terraform Code Updates](#terraform-code-updates)  
-9. [DNS Configuration with Route 53](#dns-configuration-with-route-53)  
-10. [HTTPS Setup with ACM](#https-setup-with-acm)  
-11. [Data Seeding in RDS](#data-seeding-in-rds)  
-12. [Destroy Infrastructure](#destroy-infrastructure)
+
 
 ---
 
@@ -513,58 +510,133 @@ https://github.com/arumullayaswanth/Terraform-aws-3tier-app-deployment-project
 Happy automating! 🚀
 
 
+# ✅ Steps to Setup Terraform AWS 3-Tier App Deployment
 
-## DNS Configuration with Route 53
+## Step 1: Open  VS Code and Launch Terminal
 
-### Backend Private Hosted Zone
-
-- Domain: `rds.com`
-- A Record:
-  - Name: `book`
-  - Value: RDS Endpoint
-
-### Frontend Public Hosted Zone
-
-- Domain: `aluru.site`
-- A Record:
-  - Name: `yaswanth`
-  - Target: Backend ALB
-
----
-
-## HTTPS Setup with ACM
-
-1. Request public certificate: `*.aluru.site`
-2. DNS Validation via Route 53
-3. Add HTTPS Listener on backend ALB
-
----
-
-## Data Seeding in RDS
-
-On Bastion:
-
-\`\`\`bash
+```bash
+# Clone the repo
 git clone https://github.com/arumullayaswanth/Terraform-aws-3tier-app-deployment-project.git
-cd Terraform-aws-3tier-app-deployment-project/backend
-apt install mysql-client-core-8.0
-mysql -h book.rds.com -u admin -p < test.sql
-\`\`\`
 
-Verify:
+# Navigate to the main project directory
+cd Terraform-aws-3tier-app-deployment-project
 
-\`\`\`bash
-mysql -h book.rds.com -u admin -p
-SHOW DATABASES;
-USE test;
-SHOW TABLES;
-SELECT * FROM books;
-\`\`\`
+# Open in VS Code
+code .
+
+# List files and navigate to directory
+ls
+cd PRIMARY-US-east-1/
+ls
+```
 
 ---
 
-## Destroy Infrastructure
+## ✅ Terraform Initialization and Deployment
 
-\`\`\`bash
-terraform destroy --auto-approve
-\`\`\`
+```bash
+# Initialize Terraform
+terraform init
+
+# Preview the infrastructure plan
+terraform plan
+
+# Apply the configuration to deploy the resources
+terraform apply --auto-approve
+
+# Check the state of deployed infrastructure
+terraform state list
+```
+
+---
+
+## 🔧 Post-Terraform Configuration Steps
+
+### Step 1: Configure Backend RDS DNS
+
+*Note*:Before you are creating backend Route 53 Hosted zone you have go and check the code on this path
+
+
+#### Step 1.1: Check Environment Variables
+File: `Terraform-aws-3tier-app-deployment-project/backend /.env`
+
+```env
+DB_HOST=book.rds.com
+DB_USERNAME=admin
+DB_PASSWORD="yaswanth"
+PORT=3306
+```
+
+#### Step 1.2: Create Private Hosted Zone in Route 53
+
+**Path:** Route 53 → Hosted Zones → **Create hosted zone**
+
+- **Domain name:** `rds.com`
+- **Type:** Private hosted zone
+- **VPC Region:** us-east-1 (N. Virginia)
+- **VPC ID:** 3-tier-vpc  
+- Click **Create hosted zone**
+
+#### Step 1.3: Add A Record for RDS
+
+**Path:** Route 53 → Hosted Zones → `rds.com` → **Create record**
+
+- **Record name:** `book`
+- **Type:** CNAME
+- **Routing policy:** Simple
+- **Alias:** Yes
+- **Value:** `book-rds.c0n8k0a0swtz.us-east-1.rds.amazonaws.com`
+- Click **Create record**
+
+---
+
+### Step 2: Configure Frontend Domain
+*Note* : Before you are creating frontend Route 53 Hosted zone you have go and check the code on this path
+
+
+#### Step 2.1: Verify API Base URL
+File: `Terraform-aws-3tier-app-deployment-project/client/src/pages/config.js`
+
+Ensure the active line is:
+
+```javascript
+// const API_BASE_URL = "http://3.84.145.194:84";
+ const API_BASE_URL = "http://yaswanth.aluru.site";
+// export default API_BASE_URL;
+// const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://backend";
+// export default API_BASE_URL;
+// const API_BASE_URL = "REACT_APP_API_BASE_URL_PLACEHOLDER";
+export default API_BASE_URL;
+
+```
+
+#### Step 2.2: Create Public Hosted Zone in Route 53
+
+**Path:** Route 53 → Hosted Zones → **Create hosted zone**
+
+- **Domain name:** `aluru.site`
+- **Type:** Public hosted zone  
+- Click **Create hosted zone**
+
+#### Step 2.3: Update Hostinger Nameservers
+
+**Path:** [Hostinger Panel](https://hpanel.hostinger.com/domain) → Domains → `aluru.site` → **Manage** → DNS / Nameservers
+
+- Click **Edit Nameservers**
+- Paste these NS records from Route 53:
+  - `ns-865.awsdns-84.net`
+  - `ns-1995.awsdns-97.co.uk`
+  - `ns-1418.awsdns-59.org`
+  - `ns-265.awsdns-73.com`
+- Click **Save**
+
+#### Step 2.4: Create A Record for Frontend Access
+
+**Path:** Route 53 → Hosted Zones → `aluru.site` → **Create record**
+
+- **Record name:** `yaswanth`
+- **Type:** A - IPv4 address
+- **Routing policy:** Simple
+- **Alias:** Yes
+- **Alias target:** `dualstack.backend-alb-195130194.us-east-1.elb.amazonaws.com`
+- Click **Create record**
