@@ -646,6 +646,7 @@ export default API_BASE_URL;
 - **Type:** A - IPv4 address
 - **Routing policy:** Simple
 - **Alias:** Yes
+- **Route traffic to:** Alias to Application and Classic Load Balancer
 - **Alias target:** `dualstack.backend-alb-195130194.us-east-1.elb.amazonaws.com`
 - Click **Create record**
 
