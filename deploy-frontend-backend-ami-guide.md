@@ -640,3 +640,101 @@ export default API_BASE_URL;
 - **Alias:** Yes
 - **Alias target:** `dualstack.backend-alb-195130194.us-east-1.elb.amazonaws.com`
 - Click **Create record**
+
+---
+
+
+
+## 🔒 Step 3: Configure HTTPS with ACM and ALB
+
+### Step 3.1: Request HTTPS Certificate using ACM
+
+**Path:** AWS Certificate Manager → Request Certificate
+
+- Select: **Request a public certificate**
+- Click **Next**
+- **Fully qualified domain name:** `*.aluru.site`
+- **Validation method:** DNS validation (recommended)
+- Click **Request**
+
+### Step 3.2: Validate Domain in Route 53
+
+**Path:** AWS Certificate Manager → Certificates → Domains → Create records in Route 53
+
+- Under the domain, click **Create DNS record in Amazon Route 53**
+- **Hosted zone:** `aluru.site`
+- Click **Create record**
+- Wait a few minutes for validation to complete
+
+### Step 3.3: Add HTTPS Listener to ALB
+
+**Path:** EC2 → Load Balancers → `backend-alb` → Listeners → **Add listener**
+
+- **Protocol:** HTTPS  
+- **Port:** 443  
+- **Default action:** Forward to target group  
+- **Target group:** `backend-tg`  
+- **Security policy:** ELBSecurityPolicy-2021-06 (or latest)  
+- **Certificate source:** From ACM  
+- **Certificate:** `*.aluru.site`  
+- Click **Add**
+
+---
+
+## 🛠️ Step 4: Insert Initial Records in RDS via Bastion Host
+
+### Note:
+Remember this what I am trying to say my database inside when you can access frontend in load balance so you are able to see first few records from the database later onwards after that you can insert a record so initial when you accessing frontend load balance you have to see your few records in that case you need to connect this database Insert records to access first time to see this records in that case connect RDS and insert your records while accessing time you can see those records and after that you can insert  the  to frontend and backend API methods only.  Initially dashboard we need required.
+
+
+### Steps:
+
+```bash
+# Connect to Bastion Host
+sudo -i
+
+# Clone the project
+git clone https://github.com/arumullayaswanth/Terraform-aws-3tier-app-deployment-project.git
+
+cd Terraform-aws-3tier-app-deployment-project/backend
+ls
+
+# Install MySQL Client
+apt install mysql-client-core-8.0
+
+# Verify MySQL Client
+mysql --version
+
+# Import SQL Data into RDS
+mysql -h book.rds.com -u admin -p < test.sql
+```
+
+### Verify Data in RDS
+
+```bash
+mysql -h book.rds.com -u admin -p
+# Enter password: yaswanth
+
+SHOW DATABASES;
+USE test;
+SHOW TABLES;
+SELECT * FROM books;
+```
+
+---
+
+### 🔁 Backend and Frontend Routing Flow
+
+- Accessing the **frontend load balancer** routes the request to the **frontend server**
+- Even you can check  **backend load balancer** it will respond hello backend is working fine 
+- Let's access fronend load balance
+- **frontend load balancer**  I am accessing request will go to  frontend server frontend server inside config.js in config .js in route 53 record I have given route 53 is redirecting into backend load balance and backend load balance redirecting to back in server and back and server inside . env file is there that is directing into private hosted zone in route 53 from there to RDS
+
+---
+
+## 🧹 Cleanup
+
+```bash
+# Destroy all resources
+terraform destroy --auto-approve
+```
