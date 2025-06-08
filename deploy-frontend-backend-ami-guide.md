@@ -1,5 +1,5 @@
 
-# Terraform AWS 3-Tier App Deployment (Manual EC2 Setup Guide)
+# Terraform AWS 3-Tier Architecture for Scalable Web App Deployment
 
 ## Table of Contents
 
