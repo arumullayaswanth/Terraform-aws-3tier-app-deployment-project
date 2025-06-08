@@ -19,6 +19,14 @@
 
 You will deploy two EC2 instances: a frontend server and a backend server. Each will host parts of a full-stack app connected to an RDS MySQL database. After deploying manually and taking AMIs, Terraform can recreate the infrastructure using your saved AMIs.
 
+
+✨This repository is created to learn and deploy  3-tier application on aws cloud. this project contain three layer Presentation, Application and database
+
+## 🏠 Architecture
+![Architecture of the application](architecture.gif)
+
+
+
 ---
 
 ## Frontend EC2 Setup
