@@ -725,7 +725,6 @@ SELECT * FROM books;
 
 ### 🔁 Backend and Frontend Routing Flow
 
-- Accessing the **frontend load balancer** routes the request to the **frontend server**
 - Even you can check  **backend load balancer** it will respond hello backend is working fine 
 - Let's access fronend load balance
 - **frontend load balancer**  I am accessing request will go to  frontend server frontend server inside config.js in config .js in route 53 record I have given route 53 is redirecting into backend load balance and backend load balance redirecting to back in server and back and server inside . env file is there that is directing into private hosted zone in route 53 from there to RDS
