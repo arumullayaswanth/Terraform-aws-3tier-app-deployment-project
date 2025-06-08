@@ -8,12 +8,13 @@
 3. [Backend EC2 Setup](#backend-ec2-setup)  
 4. [Backend Server Configuration](#backend-server-configuration)  
 5. [Frontend Server Configuration](#frontend-server-configuration)  
-6. [Create AMIs](#create-amis)  
-7. [Terraform Code Updates](#terraform-code-updates)  
-8. [DNS Configuration with Route 53](#dns-configuration-with-route-53)  
-9. [HTTPS Setup with ACM](#https-setup-with-acm)  
-10. [Data Seeding in RDS](#data-seeding-in-rds)  
-11. [Destroy Infrastructure](#destroy-infrastructure)
+6. [Create AMIs](#create-amis)
+7. [Terminate EC2 Instances(Frontend & Backend)](#Terminate-EC2-Instances (Frontend & Backend))
+8. [Terraform Code Updates](#terraform-code-updates)  
+9. [DNS Configuration with Route 53](#dns-configuration-with-route-53)  
+10. [HTTPS Setup with ACM](#https-setup-with-acm)  
+11. [Data Seeding in RDS](#data-seeding-in-rds)  
+12. [Destroy Infrastructure](#destroy-infrastructure)
 
 ---
 
@@ -371,13 +372,83 @@ http://yaswanth.aluru.site
 ---
 
 ## Create AMIs
+# PART 4: Create AMIs (Amazon Machine Images)
 
-1. Go to EC2 → Select Instance → Actions → Image → Create image  
-2. Name them:
-   - `frontend-ami`
-   - `backend-ami`
+Creating AMIs is an optional but **highly recommended** step before terminating instances. AMIs allow you to recreate instances later with the same configuration and data.
 
 ---
+
+## ✅ STEP 1: Create Frontend AMI
+
+1. Go to the **EC2 Dashboard** in your AWS Console.
+2. Select the **frontend EC2 instance**.
+3. Click on **Actions** → **Image and templates** → **Create Image**.
+4. Name the image: `frontend-ami`
+5. Click **Create image**.
+
+---
+
+## ✅ STEP 2: Create Backend AMI
+
+1. Go to the **EC2 Dashboard** in your AWS Console.
+2. Select the **backend EC2 instance**.
+3. Click on **Actions** → **Image and templates** → **Create Image**.
+4. Name the image: `backend-ami`
+5. Click **Create image**.
+
+---
+## Terminate EC2 Instances (Frontend & Backend)
+
+# PART 5: Terminate EC2 Instances (Frontend & Backend)
+
+⚠️ **WARNING**: This action is irreversible. All data on the instances will be permanently lost unless backed up via AMIs, snapshots, or EBS.
+
+---
+
+## ✅ Step 1: Login to AWS Console
+
+Open your browser and go to:
+
+```
+https://console.aws.amazon.com
+```
+
+Login with your AWS credentials.
+
+---
+
+## ✅ Step 2: Open EC2 Dashboard
+
+1. In the AWS Console, search for **EC2** in the top search bar.
+2. Click on the **EC2** service to open the dashboard.
+
+---
+
+## ✅ Step 3: Select the Instances
+
+1. On the left menu, click **Instances** under the **Instances** section.
+2. You will see all the running EC2 instances.
+3. Select the checkbox next to:
+
+   - Your **Frontend** instance (e.g., `frontend-server`)
+   - Your **Backend** instance (e.g., `backend-server`)
+
+---
+
+## ✅ Step 4: Terminate Instances
+
+1. Click on **Actions** → **Instance state** → **Terminate instance**.
+2. Confirm termination.
+
+---
+
+## ✅ Done
+
+Your EC2 instances will be terminated. If you created AMIs, you can relaunch them anytime.
+
+---
+
+
 
 ## Terraform Code Updates
 
