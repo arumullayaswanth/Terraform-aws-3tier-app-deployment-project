@@ -452,29 +452,67 @@ Your EC2 instances will be terminated. If you created AMIs, you can relaunch the
 
 ## Terraform Code Updates
 
-### Update AMI Filters in `launctemp.tf`:
+# 🔧 How to Use My Terraform Code (With Your Own Changes)
 
-\`\`\`hcl
-filter {
-  name   = "name"
-  values = ["frontend-ami"]
-}
-...
-filter {
-  name   = "name"
-  values = ["backend-ami"]
-}
-\`\`\`
-
-### Update Key Pair Name in `variable.tf`:
-
-\`\`\`hcl
-variable "key-name" {
-  default = "us-east-1"
-}
-\`\`\`
+To use the Terraform code from the `Terraform-aws-3tier-app-deployment-project` repository, make the following two changes before applying the code:
 
 ---
+
+## ✅ Change #1: Update AMI Name Filters
+
+**File**:  
+`Terraform-aws-3tier-app-deployment-project/PRIMARY-US-east-1/launctemp.tf`
+
+Replace the AMI filters to match your own AMI names:
+
+```hcl
+filter {
+  name   = "name"
+  values = ["frontend-ami"]  # Replace with your Frontend AMI name
+}
+
+filter {
+  name   = "name"
+  values = ["backend-ami"]   # Replace with your Backend AMI name
+}
+```
+
+Ensure that the names match exactly the AMIs you created in Part 4.
+
+---
+
+## ✅ Change #2: Update Key Pair Name
+
+**File**:  
+`Terraform-aws-3tier-app-deployment-project/PRIMARY-US-east-1/variable.tf`
+
+Modify the `key-name` variable to match the name of your manually created key pair:
+
+```hcl
+variable "key-name" {
+  description = "keyname"
+  type        = string
+  default     = "your-key-name"  # Replace with your actual key pair name
+}
+```
+
+You must create this key pair manually in the AWS Console:
+- Navigate to **EC2 Dashboard**
+- Click **Key Pairs**
+- Create a new key pair
+- Use its name in the `default` value
+
+---
+
+Once these changes are made, you can directly use the Terraform code from the GitHub repository:
+
+```
+https://github.com/arumullayaswanth/Terraform-aws-3tier-app-deployment-project
+```
+
+Happy automating! 🚀
+
+
 
 ## DNS Configuration with Route 53
 
