@@ -647,6 +647,7 @@ export default API_BASE_URL;
 - **Routing policy:** Simple
 - **Alias:** Yes
 - **Route traffic to:** Alias to Application and Classic Load Balancer
+- US East (N. Virginia)
 - **Alias target:** `dualstack.backend-alb-195130194.us-east-1.elb.amazonaws.com`
 - Click **Create record**
 
