@@ -127,12 +127,16 @@ vim test.sh
 ```bash
 #!/bin/bash
 sudo apt update -y
-curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash - &&\
-sudo apt-get install -y nodejs -y
+#Install Node.js and Dependencies
+curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+sudo apt-get install -y nodejs
 sudo npm install -g corepack -y
 corepack enable
 corepack prepare yarn@stable --activate
 sudo npm install -g pm2
+#Verify
+node -v
+npm -v
 ```
 
 3. Run the script:
@@ -195,9 +199,24 @@ Run:
 
 ```bash
 npm install
-npm install dotenv
-sudo pm2 start index.js --name "backendApi"
+
+
+# Install pm2 globally
+npm install -g pm2
+
+# Start your app
+pm2 start index.js --name backend-app
+
+# Save the process list
+pm2 save
+
+# Setup startup script to run after reboot
+pm2 startup
+
+pm2 list           # shows running apps
+pm2 logs           # live logs
 ```
+
 
 ---
 
@@ -210,6 +229,8 @@ sudo systemctl enable mysql
 sudo systemctl status mysql
 mysql --version
 ```
+
+**NOTE:** Before you are taking backend-server image you have to take the backend-server public ip and you have to paste the Google and you can see the message  hello
 
 ---
 
