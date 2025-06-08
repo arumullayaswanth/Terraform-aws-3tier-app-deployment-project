@@ -215,6 +215,159 @@ mysql --version
 ## Frontend Server Configuration
 
 
+# PART 4: Frontend Server Configuration
+
+This guide sets up the frontend server to serve your React.js application using Apache on an Ubuntu-based EC2 instance.
+
+---
+
+## ✅ Prerequisites
+
+- A running EC2 instance (frontend-server) with internet access
+- SSH access to the EC2 instance
+- Your GitHub repository cloned
+
+---
+
+## ✅ Step 1: Connect to Frontend Server
+
+```bash
+ssh -i "your-key.pem" ubuntu@<frontend-public-ip>
+```
+
+Update and upgrade the system:
+
+```bash
+sudo apt update -y
+sudo apt upgrade -y
+sudo -i
+```
+
+---
+
+## ✅ Step 2: Install Dependencies
+
+1. Create a shell script:
+
+```bash
+vim test.sh
+```
+
+2. Paste the following script inside the file:
+
+```bash
+#!/bin/bash
+sudo apt update -y
+sudo apt install apache2 -y
+curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash - &&\
+sudo apt-get install -y nodejs -y
+sudo npm install -g corepack -y
+corepack enable
+corepack prepare yarn@stable --activate
+```
+
+3. Make the script executable and run it:
+
+```bash
+chmod +x test.sh
+./test.sh
+```
+
+---
+
+## ✅ Step 3: Clone Git Repository & Edit `config.js`
+
+1. Clone your project repository:
+
+```bash
+git clone https://github.com/arumullayaswanth/Terraform-aws-3tier-app-deployment-project.git
+```
+
+2. Navigate to the frontend code:
+
+```bash
+cd Terraform-aws-3tier-app-deployment-project
+cd client
+cd src
+cd pages
+```
+
+3. Open and edit the `config.js` file:
+
+```bash
+vim config.js
+```
+
+> **Update the line:**
+
+```js
+   // const API_BASE_URL = "http://3.84.145.194:84";
+ const API_BASE_URL = "http://yaswanth.aluru.site";
+// export default API_BASE_URL;
+// const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://backend";
+// export default API_BASE_URL;
+// const API_BASE_URL = "REACT_APP_API_BASE_URL_PLACEHOLDER";
+export default API_BASE_URL;
+```
+```js
+const API_BASE_URL = "http://yaswanth.aluru.site";
+```
+
+To point to your backend domain or IP as needed.
+
+> **Ensure this is the only active line:**
+
+```js
+export default API_BASE_URL;
+```
+
+---
+
+## ✅ Step 4: Build and Deploy React App
+
+1. Go back to the `client` directory:
+
+```bash
+cd ..
+cd ..
+ls
+```
+
+2. Install dependencies and build:
+
+```bash
+npm install
+npm run build
+```
+
+3. Copy the build files to Apache’s default HTML directory:
+
+```bash
+sudo cp -r build/* /var/www/html
+```
+
+4. Verify Apache is running:
+
+```bash
+systemctl status apache2
+```
+
+---
+
+## ✅ Frontend Deployment Complete
+
+You can now access your frontend application using the public IP or domain name of your EC2 instance in a web browser.
+
+Example:
+
+```
+http://<frontend-ec2-public-ip>
+or
+http://yaswanth.aluru.site
+```
+
+---
+
 ---
 
 ## Create AMIs
