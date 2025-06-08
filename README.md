@@ -733,6 +733,10 @@ ls
 # Install MySQL Client
 apt install mysql-client-core-8.0
 
+# RDS Remote Connection Fails
+nslookup book.rds.com
+
+
 # Verify MySQL Client
 mysql --version
 
